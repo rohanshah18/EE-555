@@ -35,11 +35,8 @@ clear; clc; close all;
 % Reading original images
 bear = imread('bear.gif');
 penn256 = imread('penn256.gif');
-f1 = cast(bear, 'double');
+f1(:,:,1) = cast(bear, 'double');
 f2 = cast(penn256, 'double');
-
-% Number of pixels in original image
-N = size(f1(:,:));
 
 figure(1)
 imshow(f1)
@@ -49,22 +46,28 @@ figure(2)
 imshow(f2)
 title('Original Penn256 Image')
 
-% Structuring element B1
-B1 = [0,0,0;0,1,0;1,1,1];
-B1 = logical(B1);
-figure(3)
-imshow(B1)
-title('Structuring element B1')
+B(:,:,1) = [0,0,0;2,1,2;1,1,1];
+B(:,:,2) = [2,0,0;1,1,0;1,1,2];
+B(:,:,3) = [1,2,0;1,1,0;1,2,0];
+B(:,:,4) = [1,1,2;1,1,0;2,0,0];
+B(:,:,5) = [1,1,1;2,1,2;0,0,0];
+B(:,:,6) = [2,1,1;0,1,1;0,0,2];
+B(:,:,7) = [0,2,1;0,1,1;0,2,1];
+B(:,:,8) = [0,0,0;0,1,1;2,1,1];
 
-% Applying hit and miss transformation
-f1_hit_miss = hitAndMiss(f1, B1);
-figure(4)
-imshow(f1_hit_miss)
+i = 1;
+a=1;
+x(:,:,1) = f1(:,:);
 
-f1_hit_miss_comp = 1-f1_hit_miss;
 
-% Homotopic Skeletonization: Thinning 
-f1_thinned = intersection(f1, f1_hit_miss_comp);
-figure(5)
-imshow(f1_thinned)
+while(x(:,:,i)~=f1 | a)
+    a=0;
+    for j=1:8
+        x(:,:,i) = thinning(x(:,:,i),B(:,:,j));
+    end
+    
+    i=i+1;
+    x(:,:,i) = x(:,:,i-1);
+end
+
 toc

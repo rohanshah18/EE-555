@@ -1,6 +1,7 @@
 function [intersect] = intersection (A, B)
 
 N = size(A);
+
 C = zeros(N);
 
 for x = 1:N(1)
